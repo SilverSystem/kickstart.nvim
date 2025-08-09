@@ -91,7 +91,64 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
+
+-- Screen Keys
+vim.keymap.set({ 'n' }, '<leader>uk', '<cmd>Screenkey<CR>')
+
+-- Normal, Visual, Select modes
+local modes_nv = { 'n', 'v', 'x' }
+vim.keymap.set(modes_nv, 'j', 'h', { noremap = true, silent = true })
+vim.keymap.set(modes_nv, 'k', 'k', { noremap = true, silent = true })
+vim.keymap.set(modes_nv, 'l', 'j', { noremap = true, silent = true })
+vim.keymap.set(modes_nv, ';', 'l', { noremap = true, silent = true })
+
+-- Insert mode (movement with <C-o> to switch briefly to normal mode)
+vim.keymap.set('i', '<C-j>', '<Left>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-k>', '<Up>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-l>', '<Down>', { noremap = true, silent = true })
+vim.keymap.set('i', '<C-;>', '<Right>', { noremap = true, silent = true })
+
+-- Command-line mode
+vim.keymap.set('c', '<C-j>', '<Left>', { noremap = true, silent = true })
+vim.keymap.set('c', '<C-k>', '<Up>', { noremap = true, silent = true })
+vim.keymap.set('c', '<C-l>', '<Down>', { noremap = true, silent = true })
+vim.keymap.set('c', '<C-;>', '<Right>', { noremap = true, silent = true })
+
+-- Terminal mode (requires <C-\\><C-n> to switch to normal mode first)
+vim.keymap.set('t', '<C-j>', '<C-\\><C-n><Left>', { noremap = true, silent = true })
+vim.keymap.set('t', '<C-k>', '<C-\\><C-n><Up>', { noremap = true, silent = true })
+vim.keymap.set('t', '<C-l>', '<C-\\><C-n><Down>', { noremap = true, silent = true })
+vim.keymap.set('t', '<C-;>', '<C-\\><C-n><Right>', { noremap = true, silent = true })
+
+----- OIL -----
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
+-- Delete all buffers but the current one
+vim.keymap.set('n', '<leader>bq', '<Esc>:%bdelete|edit #|normal`"<Return>', { desc = 'Delete other buffers but the current one' })
+
+-- Redefine Ctrl+s to save with the custom function
+vim.api.nvim_set_keymap('n', '<C-s>', ':lua SaveFile()<CR>', { noremap = true, silent = true })
+
+-- Custom save function
+function SaveFile()
+  -- Check if a buffer with a file is open
+  if vim.fn.empty(vim.fn.expand '%:t') == 1 then
+    vim.notify('No file to save', vim.log.levels.WARN)
+    return
+  end
+
+  local filename = vim.fn.expand '%:t' -- Get only the filename
+  local success, err = pcall(function()
+    vim.cmd 'silent! write' -- Try to save the file without showing the default message
+  end)
+
+  if success then
+    vim.notify(filename .. ' Saved!') -- Show only the custom message if successful
+  else
+    vim.notify('Error: ' .. err, vim.log.levels.ERROR) -- Show the error message if it fails
+  end
+end
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -194,9 +251,9 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the left window' })
+vim.keymap.set('n', '<C-;>', '<C-w><C-;>', { desc = 'Move focus to the right window' })
+vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
@@ -301,6 +358,11 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    init = function()
+      -- Set the timeout for key sequences
+      vim.o.timeout = true
+      vim.o.timeoutlen = 300 -- Set the timeout length to 300 milliseconds
+    end,
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
       -- this setting is independent of vim.o.timeoutlen
@@ -344,9 +406,21 @@ require('lazy').setup({
 
       -- Document existing key chains
       spec = {
+        {
+          -- Keybinding to show which-key popup
+          '<leader>?',
+          function()
+            require('which-key').show { global = false } -- Show the which-key popup for local keybindings
+          end,
+        },
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        {
+          -- Define a group for Obsidian-related commands
+          '<leader>o',
+          group = 'Obsidian',
+        },
       },
     },
   },
