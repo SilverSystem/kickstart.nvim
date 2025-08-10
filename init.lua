@@ -237,6 +237,7 @@ require('lazy').setup({
     { import = "lazyvim.plugins.extras.lang.toml" },
     -- AI plugins
     { import = "lazyvim.plugins.extras.ai.copilot" },
+    { import = "lazyvim.plugins.extras.ai.copilot-chat" },
     -- Import/override with your plugins
     { import = "plugins" },
   },
@@ -503,31 +504,8 @@ require('lazy').setup({
       },
 
       sources = {
-        default = {  'avante_commands', 'avante_mentions', 'avante_files','lsp', 'path', 'snippets', 'lazydev' },
-        compat = {
-        'avante_commands',
-        'avante_mentions',
-        'avante_files',
-      },
+        default = { 'lsp', 'path', 'snippets', 'lazydev' },
         providers = {
-          avante_commands = {
-            name = "avante_commands",
-            module = "blink.compat.source",
-            score_offset = 90,
-            opts = {},
-          },
-          avante_files = {
-            name = "avante_files",
-            module = "blink.compat.source",
-            score_offset = 100,
-            opts = {},
-          },
-          avante_mentions = {
-            name = "avante_mentions",
-            module = "blink.compat.source",
-            score_offset = 1000,
-            opts = {},
-          },
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
         },
       },
