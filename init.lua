@@ -199,8 +199,6 @@ vim.o.confirm = true
 --  To update plugins you can run
 --    :Lazy update
 --
-
-require("config.lazy")
 vim.opt.timeoutlen = 1000
 vim.opt.ttimeoutlen = 0
 
