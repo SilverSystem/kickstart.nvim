@@ -235,6 +235,8 @@ require('lazy').setup({
     { import = "lazyvim.plugins.extras.lang.angular" },
     { import = "lazyvim.plugins.extras.lang.nix" },
     { import = "lazyvim.plugins.extras.lang.toml" },
+    -- AI plugins
+    { import = "lazyvim.plugins.extras.ai.copilot" },
     -- Import/override with your plugins
     { import = "plugins" },
   },
