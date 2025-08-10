@@ -225,6 +225,8 @@ vim.opt.ttimeoutlen = 0
 require('lazy').setup({
   checker = { enabled = true }, -- Automatically check for plugin updates
   spec = {
+     -- Add LazyVim and import its plugins
+    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
     { import = "lazyvim.plugins.extras.formatting.prettier" },
     { import = "lazyvim.plugins.extras.linting.eslint" },
     { import = "lazyvim.plugins.extras.lang.json" },
